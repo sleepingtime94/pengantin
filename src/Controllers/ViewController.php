@@ -21,7 +21,7 @@ class ViewController
         $this->blade = new BladeOne(
             __DIR__ . '/../../views',
             __DIR__ . '/../../cache',
-            BladeOne::MODE_FAST
+            BladeOne::MODE_DEBUG
         );
 
         $this->users = new UserModel();
