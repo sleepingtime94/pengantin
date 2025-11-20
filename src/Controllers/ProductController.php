@@ -49,7 +49,13 @@ class ProductController
                 return;
             }
 
-            $this->users->update($_SESSION['user_id'], ['user_step' => 2]);
+            $lastID = $this->products->getLastID();
+
+            $this->users->update($_SESSION['user_id'], [
+                'user_step' => 2,
+                'product_id' => $lastID
+            ]);
+
             $this->sendJsonResponse('success', 'Data berhasil disimpan.');
         } else {
             $this->sendJsonResponse('error', 'Gagal menyimpan data.');

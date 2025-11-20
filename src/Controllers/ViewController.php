@@ -60,15 +60,24 @@ class ViewController
 
     public function dashboard(): void
     {
-        $userDocStatus = $this->products->select($_SESSION['user_nik'])[0];
+        $userParam = $this->users->select($_SESSION['user_nik'])[0];
+        $userProduct = $this->products->selectByID($userParam['product_id'])[0];
 
         $params = [
             'csrf_token' => $this->csrf->getToken(),
             'users' => $this->users->selectByID()[0] ?? [],
             'user_upload_files' => $this->files->select() ?? [],
-            'user_doc_status' => $userDocStatus ?? []
+            'user_product' => $userProduct ?? []
         ];
 
         $this->view('dashboard.index', $params);
+    }
+
+    public function tesView(){
+        $userParam = $this->users->select('1234567890123456')[0];
+        $userProduct = $this->products->selectByID($userParam['product_id'])[0];
+        $userDocStatus = $userProduct['st'];
+
+        print_r($userDocStatus);
     }
 }

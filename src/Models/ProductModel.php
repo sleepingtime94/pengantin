@@ -49,6 +49,37 @@ class ProductModel
         }
     }
 
+    public function selectByID(string $pid)
+    {
+        try {
+            $query = "SELECT * FROM {$this->tableName} WHERE id = :id";
+
+            $stmt = $this->connection->prepare($query);
+            $stmt->bindParam(":id", $pid, PDO::PARAM_INT);
+
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: null;
+        } catch (\PDOException $e) {
+            error_log("Database Error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getLastID(): int
+    {
+        try {
+            $query = "SELECT MAX(id) FROM {$this->tableName}";
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? (int)$result['MAX(id)'] : 0;
+        } catch (\Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return 0;
+        }
+    }
 
     public function create(array $data): bool
     {

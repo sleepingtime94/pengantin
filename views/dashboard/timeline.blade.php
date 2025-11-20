@@ -1,7 +1,9 @@
 <div class="min-vh-100">
     <h4 class="p-3 text-center fw-bold">Status Permohonan</h4>
+
+    @if ($user_product['st'])
     <div class="my-3">
-        <div class="timeline" data-timeline-step="{{ $user_doc_status['st'] + 1 }}">
+        <div class="timeline" data-timeline-step="{{ $user_product['st'] + 1 }}">
             <div class="timeline-item" data-status="waiting-verification">
                 <div class="timeline-content">
                     <div class="timeline-marker"></div>
@@ -11,7 +13,7 @@
                             <h5 class="title">Menunggu Verifikasi</h5>
                         </div>
                         <div class="small">Permohonan baru dibuat.</div>
-                        <div class="small text-muted">{{ $user_doc_status['tgl_input'] }}</div>
+                        <div class="small text-muted">{{ $user_product['tgl_input'] }}</div>
                     </div>
                 </div>
             </div>
@@ -51,8 +53,8 @@
                             <h5 class="title">Dokumen Selesai</h5>
                         </div>
                         <div class="small">Dokumen telah selesai diproses dan dicetak.</div>
-                        @if($user_doc_status['st'] == 3)
-                        <div class="small text-muted">{{ $user_doc_status['tgl_proses'] }}</div>
+                        @if($user_product['st'] == 3)
+                        <div class="small text-muted">{{ $user_product['tgl_proses'] }}</div>
                         @endif
                         <div class="notify small hidden alert alert-success mt-3">
                             <h6 class="alert-heading fw-bold mb-3">Informasi Pengambilan Dokumen:</h6>
@@ -75,6 +77,11 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="my-3">
+        <div class="alert alert-warning">Mohon maaf data tidak ditemukan, silahkan coba kembali atau hubungi admin.</div>
+    </div>
+    @endif
 </div>
 
 <script>
