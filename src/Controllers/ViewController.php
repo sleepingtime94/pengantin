@@ -72,12 +72,4 @@ class ViewController
 
         $this->view('dashboard.index', $params);
     }
-
-    public function tesView(){
-        $userParam = $this->users->select('1234567890123456')[0];
-        $userProduct = $this->products->selectByID($userParam['product_id'])[0];
-        $userDocStatus = $userProduct['st'];
-
-        print_r($userDocStatus);
-    }
 }
