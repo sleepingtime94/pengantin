@@ -52,10 +52,10 @@ class UserController
         $result = file_get_contents($verifyURL, false, $context);
         $resultData = json_decode($result, true);
 
-        // if (!$resultData['success']) {
-        //     $this->sendJsonResponse('error', 'Verifikasi Turnstile gagal.');
-        //     return;
-        // }
+        if (!$resultData['success']) {
+            $this->sendJsonResponse('error', 'Verifikasi Turnstile gagal.');
+            return;
+        }
 
         // Ambil data POST dan bersihkan
         $nik = trim($_POST['nik']);

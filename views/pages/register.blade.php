@@ -38,7 +38,7 @@
             <input id="csrf-token" type="hidden" name="csrf_token" value="{{ $csrf_token }}">
 
             <!-- Turnstile Captcha -->
-            <div class="cf-turnstile mb-3" data-size="flexible" data-sitekey="0x4AAAAAAAxIWsiF6U_ZjVcx"></div>
+            <div class="cf-turnstile mb-3" data-size="flexible" data-sitekey="0x4AAAAAABUKLiFLTYnJ3ykO"></div>
 
             <!-- Tombol Mendaftar -->
             <div class="d-grid gap-2 mb-3">
