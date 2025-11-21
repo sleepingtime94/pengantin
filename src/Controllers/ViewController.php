@@ -18,15 +18,17 @@ class ViewController
 
     public function __construct()
     {
+        $base = __DIR__ . '/../../';
+
         $this->blade = new BladeOne(
-            __DIR__ . '/../../views',
-            __DIR__ . '/../../cache',
+            $base . 'views',
+            $base . 'cache',
             BladeOne::MODE_DEBUG
         );
 
-        $this->users = new UserModel();
-        $this->csrf = new Csrf();
-        $this->files = new FileModel();
+        $this->csrf     = new Csrf();
+        $this->users    = new UserModel();
+        $this->files    = new FileModel();
         $this->products = new ProductModel();
     }
 
@@ -35,13 +37,14 @@ class ViewController
         echo $this->blade->run($view, $data);
     }
 
+    private function withCsrf(array $data = []): array
+    {
+        return array_merge(['csrf_token' => $this->csrf->getToken()], $data);
+    }
+
     public function home(): void
     {
-        $params = [
-            'csrf_token' => $this->csrf->getToken()
-        ];
-
-        $this->view('pages.index', $params);
+        $this->view('pages.index', $this->withCsrf());
     }
 
     public function notFound(): void
@@ -51,24 +54,21 @@ class ViewController
 
     public function register(): void
     {
-        $params = [
-            'csrf_token' => $this->csrf->getToken()
-        ];
-
-        $this->view('pages.register', $params);
+        $this->view('pages.register', $this->withCsrf());
     }
 
     public function dashboard(): void
     {
-        $userParam = $this->users->select($_SESSION['user_nik'])[0];
-        $userProduct = $this->products->selectByID($userParam['product_id'])[0];
+        $nik = $_SESSION['user_nik'] ?? null;
+        $user = $nik ? ($this->users->select($nik)[0] ?? null) : null;
 
-        $params = [
-            'csrf_token' => $this->csrf->getToken(),
-            'users' => $this->users->selectByID()[0] ?? [],
+        $product = $user ? ($this->products->selectByID($user['product_id'])[0] ?? null) : null;
+
+        $params = $this->withCsrf([
+            'users'             => $this->users->selectByID()[0] ?? [],
             'user_upload_files' => $this->files->select() ?? [],
-            'user_product' => $userProduct ?? []
-        ];
+            'user_product'      => $product ?? [],
+        ]);
 
         $this->view('dashboard.index', $params);
     }

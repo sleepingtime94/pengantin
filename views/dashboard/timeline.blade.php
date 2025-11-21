@@ -1,7 +1,6 @@
 <div class="min-vh-100">
     <h4 class="p-3 text-center fw-bold">Status Permohonan</h4>
-
-    @if ($user_product['st'])
+    @if ($user_product)
     <div class="my-3">
         <div class="timeline" data-timeline-step="{{ $user_product['st'] + 1 }}">
             <div class="timeline-item" data-status="waiting-verification">

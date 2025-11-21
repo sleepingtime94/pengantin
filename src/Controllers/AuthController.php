@@ -4,54 +4,55 @@ namespace App\Controllers;
 
 class AuthController
 {
-    // Memastikan sesi dimulai sebelum digunakan
     private function startSession(): void
     {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
     }
 
-    // Mengalihkan pengguna yang sudah login ke dashboard.
+    private function redirect(string $path): void
+    {
+        header("Location: {$path}");
+        exit();
+    }
+
+    // Jika sudah login, jangan biarkan buka halaman login/register
     public function logged(): void
     {
         $this->startSession();
 
         if (!empty($_SESSION['auth_token'])) {
-            session_regenerate_id(true); // Perbarui session ID
-            header('Location: /dashboard');
-            exit();
+            session_regenerate_id(true);
+            $this->redirect('/dashboard');
         }
     }
 
-    // Memverifikasi apakah pengguna sudah terautentikasi.
+    // Middleware pengecekan login
     public function verify(): void
     {
         $this->startSession();
 
         if (empty($_SESSION['auth_token'])) {
-            header('Location: /login');
-            exit();
+            $this->redirect('/login');
         }
 
-        session_regenerate_id(true); // Perbarui session ID setelah verifikasi
+        session_regenerate_id(true);
     }
 
-    // Logout pengguna dan menghancurkan sesi.
+    // Logout
     public function logout(): void
     {
         $this->startSession();
 
-        // Hapus semua variabel sesi
         $_SESSION = [];
         session_unset();
         session_destroy();
 
-        // Regenerasi ID sesi setelah logout untuk keamanan tambahan
+        // Start sesi baru setelah dihancurkan (best practice)
         session_start();
         session_regenerate_id(true);
 
-        header('Location: /login');
-        exit();
+        $this->redirect('/login');
     }
 }
