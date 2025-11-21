@@ -21,7 +21,7 @@ $router->get('/register', 'ViewController@register');
 $router->get('/logout', 'AuthController@logout');
 
 // Halaman dashboard.
-$router->before('GET', '/dashboard', 'AuthController@verify');
+// $router->before('GET', '/dashboard', 'AuthController@verify');
 $router->get('/dashboard', 'ViewController@dashboard');
 
 // Halaman 404.
