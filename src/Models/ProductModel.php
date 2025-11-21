@@ -49,7 +49,7 @@ class ProductModel
         }
     }
 
-    public function selectByID(string $pid)
+    public function selectByID(int $pid)
     {
         try {
             $query = "SELECT * FROM {$this->tableName} WHERE id = :id";
