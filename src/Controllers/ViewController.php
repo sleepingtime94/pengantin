@@ -59,13 +59,22 @@ class ViewController
 
     public function dashboard(): void
     {
-        $nik = $_SESSION['user_nik'] ?? null;
-        $user = $nik ? ($this->users->select($nik)[0] ?? null) : null;
+        // Ambil user berdasarkan session NIK
+        $nik   = $_SESSION['user_nik'] ?? null;
+        $user  = $nik ? ($this->users->select($nik)[0] ?? null) : null;
 
-        $product = $user ? ($this->products->selectByID($user['product_id'])[0] ?? null) : null;
+        // Cegah error kalau user tidak ditemukan
+        if (!$user) {
+            $this->view('pages.404');
+            return;
+        }
+
+        // Ambil product (aman dari NULL)
+        $productId = $user['product_id'] ?? null;
+        $product   = $productId ? ($this->products->selectByID((int) $productId)[0] ?? null) : null;
 
         $params = $this->withCsrf([
-            'users'             => $this->users->selectByID()[0] ?? [],
+            'users'             => $user,
             'user_upload_files' => $this->files->select() ?? [],
             'user_product'      => $product ?? [],
         ]);
