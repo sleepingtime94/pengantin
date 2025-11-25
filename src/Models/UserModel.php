@@ -15,6 +15,21 @@ class UserModel
         $this->connection = (new Mysql())->connect();
     }
 
+    public function show(): ?array
+    {
+        try {
+            $query = "SELECT * FROM {$this->tableName} ORDER BY id DESC";
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: null; // Kembalikan null jika tidak ada hasil
+        } catch (\PDOException $e) {
+            error_log("Database Error: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function select(string $nik): ?array
     {
         try {

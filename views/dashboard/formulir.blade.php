@@ -35,23 +35,23 @@
                         </div>
                         <div class="card-body">
                             <div class="form-floating mb-3">
-                                <input type="text" id="lk-kk" class="form-control" placeholder="Nomor Kartu Keluarga" aria-label="Nomor Kartu Keluarga" required>
+                                <input type="text" id="lk-kk" class="form-control" placeholder="Nomor Kartu Keluarga" aria-label="Nomor Kartu Keluarga" required value="{{ $user_product['lk_kk'] ?? '' }}">
                                 <label for="lk-kk">Nomor Kartu Keluarga</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="lk-nik" class="form-control" placeholder="NIK (Nomor Induk Kependudukan)" aria-label="NIK (Nomor Induk Kependudukan)" required>
+                                <input type="text" id="lk-nik" class="form-control" placeholder="NIK (Nomor Induk Kependudukan)" aria-label="NIK (Nomor Induk Kependudukan)" required value="{{ $user_product['lk_nik'] ?? '' }}">
                                 <label for="lk-nik">NIK (Nomor Induk Kependudukan)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="lk-name" class="form-control" placeholder="Nama Lengkap" aria-label="Nama Lengkap" required>
+                                <input type="text" id="lk-name" class="form-control" placeholder="Nama Lengkap" aria-label="Nama Lengkap" required value="{{ $user_product['lk_nama'] ?? '' }}">
                                 <label for="lk-name">Nama Lengkap</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="lk-phone" class="form-control" placeholder="Nomor Telepon (WhatsApp)" aria-label="Nomor Telepon (WhatsApp)" required>
+                                <input type="text" id="lk-phone" class="form-control" placeholder="Nomor Telepon (WhatsApp)" aria-label="Nomor Telepon (WhatsApp)" required value="{{ $user_product['lk_telp'] ?? '' }}">
                                 <label for="lk-phone">Nomor Telepon (WhatsApp)</label>
                             </div>
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Alamat Tinggal" id="lk-addr" style="height: 120px;" required></textarea>
+                                <textarea class="form-control" placeholder="Alamat Tinggal" id="lk-addr" style="height: 120px;" required>{{ $user_product['lk_alamat'] ?? '' }}</textarea>
                                 <label for="lk-addr">Alamat Tinggal (Sesuai Kartu Keluarga)</label>
                             </div>
                         </div>
@@ -64,23 +64,23 @@
                         </div>
                         <div class="card-body">
                             <div class="form-floating mb-3">
-                                <input type="text" id="pr-kk" class="form-control" placeholder="Nomor Kartu Keluarga" aria-label="Nomor Kartu Keluarga" required>
+                                <input type="text" id="pr-kk" class="form-control" placeholder="Nomor Kartu Keluarga" aria-label="Nomor Kartu Keluarga" required value="{{ $user_product['pr_kk'] ?? '' }}">
                                 <label for="pr-kk">Nomor Kartu Keluarga</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="pr-nik" class="form-control" placeholder="NIK (Nomor Induk Kependudukan)" aria-label="NIK (Nomor Induk Kependudukan)" required>
+                                <input type="text" id="pr-nik" class="form-control" placeholder="NIK (Nomor Induk Kependudukan)" aria-label="NIK (Nomor Induk Kependudukan)" required value="{{ $user_product['pr_nik'] ?? '' }}">
                                 <label for="pr-nik">NIK (Nomor Induk Kependudukan)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="pr-name" class="form-control" placeholder="Nama Lengkap" aria-label="Nama Lengkap" required>
+                                <input type="text" id="pr-name" class="form-control" placeholder="Nama Lengkap" aria-label="Nama Lengkap" required value="{{ $user_product['pr_nama'] ?? '' }}">
                                 <label for="pr-name">Nama Lengkap</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" id="pr-phone" class="form-control" placeholder="Nomor Telepon (WhatsApp)" aria-label="Nomor Telepon (WhatsApp)" required>
+                                <input type="text" id="pr-phone" class="form-control" placeholder="Nomor Telepon (WhatsApp)" aria-label="Nomor Telepon (WhatsApp)" required value="{{ $user_product['pr_telp'] ?? '' }}">
                                 <label for="pr-phone">Nomor Telepon (WhatsApp)</label>
                             </div>
                             <div class="form-floating">
-                                <textarea class="form-control" placeholder="Alamat Tinggal" id="pr-addr" style="height: 120px;" required></textarea>
+                                <textarea class="form-control" placeholder="Alamat Tinggal" id="pr-addr" style="height: 120px;" required>{{ $user_product['pr_alamat'] ?? '' }}</textarea>
                                 <label for="pr-addr">Alamat Tinggal (Sesuai Kartu Keluarga)</label>
                             </div>
                         </div>
@@ -90,13 +90,14 @@
         </div>
     </div>
 
+    @if(!$user_product['keterangan'])
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light py-3">
             <h5 class="mb-0"><i class="bi bi-house-door-fill me-2"></i>Alamat Baru (Setelah Menikah)</h5>
         </div>
         <div class="card-body p-4">
             <div class="form-floating mb-3">
-                <input type="text" autocomplete="off" class="form-control" name="addr-street" id="addr-street" placeholder="Nama Jalan" required>
+                <input type="text" autocomplete="off" class="form-control" name="addr-street" id="addr-street" placeholder="Nama Jalan" required value="{{ $user_product['pr_alamat_baru'] ?? '' }}">
                 <label for="addr-street">Nama Jalan</label>
             </div>
             <div class="row g-3 mb-3">
@@ -129,6 +130,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="card shadow-sm">
         <div class="card-header bg-light py-3">
@@ -136,8 +138,8 @@
         </div>
         <div class="card-body p-4">
             <div class="form-floating mb-3">
-                <textarea class="form-control" placeholder="CATATAN" style="height: 150px;" name="notes" id="notes" required></textarea>
-                <label for="notes">Pendidikan/Pekerjaan/Golongan Darah atau catatan lainnya</label>
+                <textarea class="form-control" placeholder="CATATAN" style="height: 150px;" name="notes" id="notes" required>{{ $user_product['keterangan'] ?? '' }}</textarea>
+                <label for="notes" class="form-label text-wrap">Pendidikan/ Pekerjaan/ Golongan Darah atau catatan lainnya</label>
             </div>
             <div class="alert alert-warning">
                 <small><i class="bi bi-exclamation-triangle-fill me-2"></i>Untuk perubahan data seperti pendidikan, lampirkan <strong>ijazah terakhir</strong>. Untuk perubahan pekerjaan, lampirkan <strong>SK Kerja</strong>.</small>
@@ -233,6 +235,10 @@
         var scrollPercent = (scrollTop / (docHeight - winHeight)) * 100;
 
         $('#progress-bar-fill').css('width', scrollPercent + '%');
+    });
+
+    $(function() {
+        $("#kua").val("{{ $user_product['id_user'] ?? 0 }}");
     });
 
 </script>

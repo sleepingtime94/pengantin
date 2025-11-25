@@ -24,6 +24,10 @@ $router->get('/logout', 'AuthController@logout');
 $router->before('GET', '/dashboard', 'AuthController@verify');
 $router->get('/dashboard', 'ViewController@dashboard');
 
+// Halaman admin.
+// $router->before('GET', '/admin', 'AuthController@verify');
+$router->get('/admin', 'ViewController@admin');
+
 // Halaman 404.
 $router->set404('ViewController@notFound');
 

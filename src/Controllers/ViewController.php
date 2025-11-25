@@ -57,6 +57,15 @@ class ViewController
         $this->view('pages.register', $this->withCsrf());
     }
 
+    public function admin(): void
+    {
+        $params = [
+            'users' => $this->users->show() ?? [],
+        ];
+        
+        $this->view('pages.admin', $params);
+    }
+
     public function dashboard(): void
     {
         // Ambil user berdasarkan session NIK
