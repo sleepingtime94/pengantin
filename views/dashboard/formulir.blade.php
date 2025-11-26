@@ -90,14 +90,13 @@
         </div>
     </div>
 
-    @if(!$user_product['keterangan'])
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light py-3">
             <h5 class="mb-0"><i class="bi bi-house-door-fill me-2"></i>Alamat Baru (Setelah Menikah)</h5>
         </div>
         <div class="card-body p-4">
             <div class="form-floating mb-3">
-                <input type="text" autocomplete="off" class="form-control" name="addr-street" id="addr-street" placeholder="Nama Jalan" required value="{{ $user_product['pr_alamat_baru'] ?? '' }}">
+                <input type="text" autocomplete="off" class="form-control" name="addr-street" id="addr-street" placeholder="Nama Jalan" required value="">
                 <label for="addr-street">Nama Jalan</label>
             </div>
             <div class="row g-3 mb-3">
@@ -130,7 +129,6 @@
             </div>
         </div>
     </div>
-    @endif
 
     <div class="card shadow-sm">
         <div class="card-header bg-light py-3">
@@ -204,6 +202,7 @@
                 , url: "/product/register"
                 , data: formData
                 , success: function(result) {
+                    console.log(result);
                     if (result.status === 'success') {
                         Swal.fire({
                             title: 'Sukses'
@@ -240,5 +239,49 @@
     $(function() {
         $("#kua").val("{{ $user_product['id_user'] ?? 0 }}");
     });
+
+
+    function parseAlamat(alamat) {
+        // Normalisasi spasi
+        alamat = alamat
+            .replace(/^ALAMAT BARU[: ]*/i, "")
+            .replace(/\s+/g, " ")
+            .trim();
+
+        // Jalan = semua sebelum RT
+        var jalanSplit = alamat.split(/RT[: ]+/i);
+        var jalan = jalanSplit.length > 1 ? jalanSplit[0].trim() : "";
+
+        // RT
+        var rtMatch = alamat.match(/RT[: ]+(\d+)/i);
+
+        // RW
+        var rwMatch = alamat.match(/RW[: ]+(\d+)/i);
+
+        // Kel/Desa → tangkap apa pun setelah kata KEL atau DESA sampai ketemu "KEC"
+        var kelMatch = alamat.match(/(KEL|DESA)[^A-Za-z0-9]*\s*([A-Z0-9 ]+?)\s+KEC/i);
+
+        // Kecamatan
+        var kecMatch = alamat.match(/KEC[^A-Za-z0-9]*\s*([A-Z0-9 ]+)/i);
+
+        return {
+            jalan: jalan
+            , rt: rtMatch ? rtMatch[1].trim() : ""
+            , rw: rwMatch ? rwMatch[1].trim() : ""
+            , kel_desa: kelMatch ? kelMatch[2].trim() : ""
+            , kecamatan: kecMatch ? kecMatch[1].trim().replace(/,$/, "") : ""
+        };
+    }
+
+    const address = "{{ $user_product['alamat_baru'] }}";
+    const formatAddress = parseAlamat(address);
+
+    if (formatAddress) {
+        $("#addr-street").val(formatAddress.jalan);
+        $("#addr-rt").val(formatAddress.rt);
+        $("#addr-rw").val(formatAddress.rw);
+        $("#addr-ds").val(formatAddress.kel_desa);
+        $("#addr-kec").val(formatAddress.kecamatan);
+    }
 
 </script>

@@ -30,18 +30,13 @@
             </div>
 
             <input id="csrf-token" type="hidden" name="csrf_token" value="{{ $csrf_token }}">
-
-            <!-- Turnstile Captcha -->
-            <div class="cf-turnstile mb-3" data-size="flexible" data-sitekey="0x4AAAAAABUKLiFLTYnJ3ykO"></div>
-
-            <!-- Tombol Masuk -->
-            <div class="d-grid gap-2 mb-3">
+            <div class="cf-turnstile" data-size="flexible" data-sitekey="0x4AAAAAABUKLiFLTYnJ3ykO"></div>
+            <div class="d-grid gap-2 my-2">
                 <button id="login" class="btn btn-primary btn-lg">Masuk</button>
+                <button onclick="window.location.href='/register'" class="btn btn-success btn-lg">Registrasi</button>
             </div>
-
-            <!-- Link Registrasi -->
-            <div class="text-center">
-                <p class="mb-0">Belum punya akun? <a href="/register" class="text-decoration-none fw-medium">Daftar di sini</a></p>
+            <div class="text-center mt-3">
+                <p><button class="btn btn-link text-decoration-none">Reset Kata Sandi</button></p>
             </div>
         </div>
     </div>

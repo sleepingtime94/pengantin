@@ -25,7 +25,7 @@ $router->before('GET', '/dashboard', 'AuthController@verify');
 $router->get('/dashboard', 'ViewController@dashboard');
 
 // Halaman admin.
-// $router->before('GET', '/admin', 'AuthController@verify');
+$router->before('GET', '/admin', 'AuthController@verify');
 $router->get('/admin', 'ViewController@admin');
 
 // Halaman 404.
@@ -36,6 +36,7 @@ $router->before('GET|POST', '/product', 'AuthController@verify');
 $router->mount('/product', function () use ($router) {
     $router->post('/register', 'ProductController@register');
     $router->post('/complete', 'ProductController@completeStatus');
+    $router->post('/edit', 'ProductController@editFormulir');
 });
 
 // Autentikasi.

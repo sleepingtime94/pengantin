@@ -36,18 +36,10 @@
             </div>
 
             <input id="csrf-token" type="hidden" name="csrf_token" value="{{ $csrf_token }}">
-
-            <!-- Turnstile Captcha -->
-            <div class="cf-turnstile mb-3" data-size="flexible" data-sitekey="0x4AAAAAABUKLiFLTYnJ3ykO"></div>
-
-            <!-- Tombol Mendaftar -->
-            <div class="d-grid gap-2 mb-3">
+            <div class="cf-turnstile" data-size="flexible" data-sitekey="0x4AAAAAABUKLiFLTYnJ3ykO"></div>
+            <div class="d-grid gap-2 my-2">
                 <button id="register" class="btn btn-success btn-lg">Mendaftar</button>
-            </div>
-
-            <!-- Link Masuk -->
-            <div class="text-center">
-                <p class="mb-0">Sudah punya akun? <a href="/" class="text-decoration-none fw-medium">Masuk di sini</a></p>
+                <button onclick="window.location.href='/login'" class="btn btn-primary btn-lg">Masuk</button>
             </div>
         </div>
     </div>

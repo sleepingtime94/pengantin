@@ -80,10 +80,20 @@
                                                 <td>{{ $user_product['pr_telp'] }}</td>
                                             </tr>
                                             <tr>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alamat Baru</th>
+                                                <td>{{ $user_product['alamat_baru'] }}</td>
+                                            </tr>
+                                            <tr>
                                                 <th>Catatan</th>
                                                 <td>{{ $user_product['keterangan'] }}</td>
                                             </tr>
                                         </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-success" data-bs-dismiss="modal">Konfirmasi</button>
                                     </div>
                                 </div>
                             </div>
@@ -196,9 +206,30 @@
             , cancelButtonText: "Batal"
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: "Data berhasil diubah!"
-                    , icon: "success"
+                $.ajax({
+                    url: "/product/edit"
+                    , type: "POST"
+                    , success: function(response) {
+                        if (response.status == "success") {
+                            Swal.fire({
+                                text: "Silahkan tunggu, memuat data permohonan."
+                                , icon: "success"
+                                , timer: 2000
+                                , timerProgressBar: true
+                                , allowOutsideClick: false
+                                , showConfirmButton: false
+                            }).then((result) => {
+                                if (result.dismiss === Swal.DismissReason.timer) {
+                                    location.reload()
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Gagal mengambil data!"
+                                , icon: "error"
+                            });
+                        }
+                    }
                 });
             }
         });

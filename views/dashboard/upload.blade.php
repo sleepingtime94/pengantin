@@ -38,7 +38,7 @@
                     </div>
                     <div class="mt-4 d-grid">
                         <input id="csrf-token" type="hidden" name="csrf_token" value="{{ $csrf_token }}">
-                        <button type="submit" class="btn btn-primary btn-lg">Unggah</button>
+                        <button type="submit" class="btn btn-primary btn-lg">Unggah File</button>
                     </div>
                 </form>
             </div>
@@ -72,6 +72,7 @@
                                     @elseif ($item['file_category'] == 4)
                                     Lainnya
                                     @endif
+                                    <div class="small text-muted">{{ $item['file_created'] }}</div>
                                 </td>
                                 <td class="p-3 text-center">
                                     <button type="button" class="btn btn-primary btn-sm file-show me-1"
