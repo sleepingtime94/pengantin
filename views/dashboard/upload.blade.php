@@ -1,5 +1,5 @@
 <div class="bg-light p-md-4 min-vh-100">
-    <div class="container py-4">
+    <div class="container">
         <div class="alert alert-info text-center small mb-4">Silahkan unggah dokumen pendukung untuk <strong>perubahan
                 data</strong>. Seperti ijazah, akta kelahiran dan lain sebagainya.</div>
 
@@ -50,7 +50,7 @@
             <div class="card-header">
                 <h5 class="mb-0">Dokumen Terunggah</h5>
             </div>
-            <div class="card-body p-0">
+            <div class="card-body p-3">
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover mb-0">
                         <thead class="table-light">
@@ -74,7 +74,7 @@
                                     @endif
                                     <div class="small text-muted">{{ $item['file_created'] }}</div>
                                 </td>
-                                <td class="p-3 text-center">
+                                <td class="p-3">
                                     <button type="button" class="btn btn-primary btn-sm file-show me-1"
                                         data-path="{{ $item['file_path'] }}">Lihat</button>
                                     <button type="button" class="btn btn-danger btn-sm file-delete"
@@ -90,7 +90,7 @@
         @endif
 
         <!-- Completion Card -->
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-5">
             <div class="card-body text-center">
                 <p class="mb-3 lead">Konfirmasi data yang sudah diinput, dengan menekan tombol selesai dibawah ini.</p>
                 <div class="d-grid">

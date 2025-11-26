@@ -126,6 +126,57 @@ class UserController
         }
     }
 
+    public function resetPassword()
+    {
+        // Validasi CSRF token sebelum memproses reset password
+        if (!$this->csrf->validateToken()) {
+            $this->sendJsonResponse('error', 'CSRF token tidak valid atau hilang.');
+            return;
+        }
+
+        // Validasi input
+        if (empty($_POST['nik'])) {
+            $this->sendJsonResponse('error', 'NIK harus diisi.');
+            return;
+        }
+
+        // Bersihkan input
+        $nik = trim($_POST['nik']);
+
+        // Cek apakah NIK ada di database
+        if (!$this->users->select($nik)) {
+            $this->sendJsonResponse('error', 'NIK tidak terdaftar.');
+            return;
+        }
+
+        // Generate password baru
+        $newPassword = $this->randomPassword();
+
+        // Hash password baru
+        $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        // Update password di database
+        $user = $this->users->select($nik);
+        $userID = $user[0]['id'];
+        $userPhone = $user[0]['user_phone'];
+        $this->users->update($userID, ['user_password' => $hashedPassword]);
+
+        // Kirim email notifikasi
+        $this->sendWhatsapp($userPhone, $newPassword);
+
+        $this->sendJsonResponse('success', 'Kata sandi berhasil direset. Silahkan periksa chat pada nomor Whatsapp terdaftar.');
+    }
+
+    private function randomPassword($length = 6)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        $result = '';
+        for ($i = 0; $i < $length; $i++) {
+            $result .= $chars[rand() % strlen($chars)];
+        }
+        return $result;
+    }
+
     private function validateRegistrationInput(): bool
     {
         if (empty($_POST['nik']) || empty($_POST['pass']) || empty($_POST['phone'])) {
@@ -167,5 +218,33 @@ class UserController
         header('Content-Type: application/json');
         echo json_encode(['status' => $status, 'message' => $message]);
         exit();
+    }
+
+    private function sendWhatsapp(string $phone, string $newPassword): void
+    {
+        $message = "Kata sandi sudah direset.\nSilahkan login dengan kata sandi baru ini: *$newPassword*\n\nInovasi Pengantin\nhttps://pengantin.dukcapil.tapinkab.go.id";
+        $url = 'http://36.91.137.28:9000/send-message';
+        $data = [
+            'phone' => $phone,
+            'message' => $message,
+            'key' => 'dukcapil6305',
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_SSL_VERIFYPEER => false, // Disable SSL verification for self-signed cert
+        ]);
+
+        $result = curl_exec($ch);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($result === false) {
+            $this->sendJsonResponse('error', 'Gagal mengirim pesan WhatsApp: ' . $error);
+        }
     }
 }

@@ -36,7 +36,7 @@
                 <button onclick="window.location.href='/register'" class="btn btn-success btn-lg">Registrasi</button>
             </div>
             <div class="text-center mt-3">
-                <p><button class="btn btn-link text-decoration-none">Reset Kata Sandi</button></p>
+                <button id="forgot-pass" class="btn btn-link text-decoration-none">Lupa Kata Sandi?</button>
             </div>
         </div>
     </div>
@@ -122,6 +122,60 @@
                     });
                 }
             });
+        })
+
+        $('#forgot-pass').on('click', function() {
+            Swal.fire({
+                icon: 'question'
+                , title: 'Lupa Kata Sandi?'
+                , text: 'Masukkan NIK, kode reset dikirimkan ke nomor whatsapp yang terdaftar.'
+                , input: 'text'
+                , inputPlaceholder: 'Masukkan NIK'
+                , showCancelButton: true
+                , confirmButtonText: 'Kirim'
+                , cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var nik = result.value;
+                    var csrfToken = $('#csrf-token').val();
+                    var formData = {
+                        nik: nik
+                        , csrf_token: csrfToken
+                    , };
+
+                    $.ajax({
+                        url: '/user/reset-password'
+                        , type: 'POST'
+                        , data: formData
+                        , success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success'
+                                    , title: 'Berhasil'
+                                    , text: response.message
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error'
+                                    , title: 'Gagal'
+                                    , text: response.message
+                                    , showConfirmButton: false
+                                    , timer: 1500
+                                });
+                            }
+                        }
+                        , error: function(xhr, status, error) {
+                            Swal.fire({
+                                icon: 'error'
+                                , title: 'Gagal'
+                                , text: 'Terjadi kesalahan saat mengirim permintaan.'
+                                , showConfirmButton: false
+                                , timer: 1500
+                            });
+                        }
+                    });
+                }
+            })
         })
     });
 

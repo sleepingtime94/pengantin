@@ -17,8 +17,8 @@
                         </div>
                         @if($user_product['st'] == 0)
                         <div class="mt-3">
-                            <button class="btn btn-primary rounded-2" data-bs-toggle="modal" data-bs-target="#viewData"><i class="bi bi-eye me-1"></i> Lihat</button>
-                            <button id="btn-change-data" class="btn btn-success rounded-2"><i class="bi bi-pencil-square me-1"></i> Ubah</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#viewData"><i class="bi bi-eye me-1"></i> Lihat</button>
+                            <button id="btn-change-data" class="btn btn-success"><i class="bi bi-pencil-square me-1"></i> Ubah</button>
                         </div>
                         <div class="modal fade" id="viewData" tabindex="-1" aria-labelledby="viewDataLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -93,7 +93,7 @@
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-success" data-bs-dismiss="modal">Konfirmasi</button>
+                                        <button class="btn btn-success" data-bs-dismiss="modal"><i class="bi bi-check-all me-1"></i> Konfirmasi</button>
                                     </div>
                                 </div>
                             </div>

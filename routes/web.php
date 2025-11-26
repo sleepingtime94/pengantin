@@ -43,6 +43,7 @@ $router->mount('/product', function () use ($router) {
 $router->mount('/user', function () use ($router) {
     $router->post('/login', 'UserController@login');
     $router->post('/register', 'UserController@register');
+    $router->post('/reset-password', 'UserController@resetPassword');
 });
 
 // Upload file.

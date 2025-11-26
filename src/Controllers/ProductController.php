@@ -17,66 +17,84 @@ class ProductController
         $this->users = new UserModel();
     }
 
+    /**
+     * Mendaftarkan atau memperbarui data produk berdasarkan input dari form.
+     * Metode ini memvalidasi input, memformat alamat, dan kemudian membuat entri baru
+     * atau memperbarui entri yang sudah ada di database.
+     */
     public function register(): void
     {
-        $obj = (object) $_POST;
+        // Mengubah nama variabel menjadi lebih deskriptif
+        $requestData = (object) $_POST;
 
-        if (!$this->validateInput($obj)) {
+        if (!$this->validateInput($requestData)) {
             return;
         }
 
-        $new_addr = $this->formatAddress($obj);
+        $newAddress = $this->formatAddress($requestData);
 
+        // Menambahkan komentar untuk menjelaskan singkatan yang tidak jelas
         $params = [
-            'id_user' => $obj->kua,
-            'lk_nik' => $obj->lk_nik,
-            'lk_kk' => $obj->lk_kk,
-            'lk_nama' => strtoupper($obj->lk_name),
-            'lk_alamat' => strtoupper($obj->lk_addr),
-            'lk_telp' => $obj->lk_phone,
-            'pr_nik' => $obj->pr_nik,
-            'pr_kk' => $obj->pr_kk,
-            'pr_nama' => strtoupper($obj->pr_name),
-            'pr_alamat' => strtoupper($obj->pr_addr),
-            'pr_telp' => $obj->pr_phone,
-            'st' => 0,
-            'alamat_baru' => strtoupper($new_addr),
-            'keterangan' => strtoupper($obj->notes)
+            'id_user' => $requestData->kua,
+            'lk_nik' => $requestData->lk_nik, // lk = Laki-laki (Male)
+            'lk_kk' => $requestData->lk_kk,
+            'lk_nama' => strtoupper($requestData->lk_name),
+            'lk_alamat' => strtoupper($requestData->lk_addr),
+            'lk_telp' => $requestData->lk_phone,
+            'pr_nik' => $requestData->pr_nik, // pr = Perempuan (Female)
+            'pr_kk' => $requestData->pr_kk,
+            'pr_nama' => strtoupper($requestData->pr_name),
+            'pr_alamat' => strtoupper($requestData->pr_addr),
+            'pr_telp' => $requestData->pr_phone,
+            'st' => 0, // st = Status
+            'alamat_baru' => strtoupper($newAddress),
+            'keterangan' => strtoupper($requestData->notes)
         ];
 
-        if (!$this->checkProductID()) {
-            $this->products->update($this->getProductID(), $params);
+        // Memastikan sesi ada sebelum melanjutkan
+        if (!$this->checkSession()) {
+            return;
+        }
+
+        $productId = $this->getProductID();
+        $isSuccess = false;
+
+        // Perbaikan logika: jika product ID ada, maka update. Jika tidak, maka create.
+        if ($productId) {
+            $isSuccess = $this->products->update($productId, $params);
+        } else {
+            $isSuccess = $this->products->create($params);
+            if ($isSuccess) {
+                $productId = $this->products->getLastID();
+            }
+        }
+
+        if ($isSuccess) {
+            // Pembaruan status user dilakukan di luar if/else untuk menghindari pengulangan kode (DRY Principle)
             $this->users->update($_SESSION['user_id'], [
                 'user_step' => 2,
+                'product_id' => $productId // Hanya update product_id jika baru dibuat
             ]);
             $this->sendJsonResponse('success', 'Data berhasil disimpan.');
         } else {
-            if ($this->products->create($params)) {
-                if (!$this->checkSession()) {
-                    return;
-                }
-
-                $lastID = $this->products->getLastID();
-                $this->users->update($_SESSION['user_id'], [
-                    'user_step' => 2,
-                    'product_id' => $lastID
-                ]);
-
-                $this->sendJsonResponse('success', 'Data berhasil disimpan.');
-            } else {
-                $this->sendJsonResponse('error', 'Gagal menyimpan data.');
-            }
+            $this->sendJsonResponse('error', 'Gagal menyimpan data.');
         }
     }
 
-    private function validateInput(object $obj): bool
+    /**
+     * Memvalidasi input NIK dan KK dari request data.
+     *
+     * @param object $requestData Data yang dikirim dari form.
+     * @return bool Mengembalikan true jika valid, false jika tidak.
+     */
+    private function validateInput(object $requestData): bool
     {
-        if (!preg_match('/^\d{16}$/', $obj->lk_nik) || !preg_match('/^\d{16}$/', $obj->pr_nik)) {
+        if (!preg_match('/^\d{16}$/', $requestData->lk_nik) || !preg_match('/^\d{16}$/', $requestData->pr_nik)) {
             $this->sendJsonResponse('error', 'NIK harus berupa 16 digit angka.');
             return false;
         }
 
-        if ((!empty($obj->lk_kk) && !preg_match('/^\d{16}$/', $obj->lk_kk)) || (!empty($obj->pr_kk) && !preg_match('/^\d{16}$/', $obj->pr_kk))) {
+        if ((!empty($requestData->lk_kk) && !preg_match('/^\d{16}$/', $requestData->lk_kk)) || (!empty($requestData->pr_kk) && !preg_match('/^\d{16}$/', $requestData->pr_kk))) {
             $this->sendJsonResponse('error', 'Nomor KK harus berupa 16 digit angka.');
             return false;
         }
@@ -84,11 +102,23 @@ class ProductController
         return true;
     }
 
-    private function formatAddress(object $obj): string
+    /**
+     * Memformat alamat menjadi satu string yang terstruktur.
+     *
+     * @param object $requestData Data yang dikirim dari form.
+     * @return string Alamat yang sudah diformat.
+     */
+    private function formatAddress(object $requestData): string
     {
-        return "ALAMAT BARU: {$obj->addr_street} RT: {$obj->addr_rt} RW: {$obj->addr_rw} KEL/DESA: {$obj->addr_ds} KEC: {$obj->addr_kec}";
+        return "ALAMAT BARU: {$requestData->addr_street} RT: {$requestData->addr_rt} RW: {$requestData->addr_rw} KEL/DESA: {$requestData->addr_ds} KEC: {$requestData->addr_kec}";
     }
 
+    /**
+     * Mengirimkan response dalam format JSON dan menghentikan eksekusi skrip.
+     *
+     * @param string $status Status dari response ('success' atau 'error').
+     * @param string $message Pesan yang akan dikirim.
+     */
     private function sendJsonResponse(string $status, string $message): void
     {
         http_response_code(200);
@@ -97,6 +127,9 @@ class ProductController
         exit();
     }
 
+    /**
+     * Memperbarui status user menjadi 'selesai' (step 3).
+     */
     public function completeStatus(): void
     {
         if (!$this->checkSession()) {
@@ -105,33 +138,33 @@ class ProductController
 
         $result = $this->users->update($_SESSION['user_id'], ['user_step' => 3]);
 
-        if ($result) {
-            $this->sendJsonResponse('success', 'Status berhasil diperbarui.');
-        } else {
-            $this->sendJsonResponse('error', 'Gagal memperbarui status.');
-        }
+        $this->sendJsonResponseFromResult($result, 'Status berhasil diperbarui.', 'Gagal memperbarui status.');
     }
 
+    /**
+     * Mengembalikan status user ke 'edit formulir' (step 1) jika formulir belum diverifikasi.
+     */
     public function editFormulir(): void
     {
         if (!$this->checkSession()) {
             return;
         }
 
-        $getStatusProduct = $this->getStatusProduct();
+        $productStatus = $this->getStatusProduct();
 
-        if ($getStatusProduct > 0) {
-            $this->sendJsonResponse('success', 'Formulir sudah diverifikasi.');
+        if ($productStatus > 0) {
+            $this->sendJsonResponse('success', 'Formulir sudah diverifikasi dan tidak dapat diedit.');
         } else {
             $result = $this->users->update($_SESSION['user_id'], ['user_step' => 1]);
-            if ($result) {
-                $this->sendJsonResponse('success', 'Status berhasil diperbarui.');
-            } else {
-                $this->sendJsonResponse('error', 'Gagal memperbarui status.');
-            }
+            $this->sendJsonResponseFromResult($result, 'Status berhasil diperbarui.', 'Gagal memperbarui status.');
         }
     }
 
+    /**
+     * Memeriksa apakah sesi pengguna ada dan valid.
+     *
+     * @return bool Mengembalikan true jika sesi valid, false jika tidak.
+     */
     private function checkSession(): bool
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -146,36 +179,69 @@ class ProductController
         return true;
     }
 
-    private function getStatusProduct()
+    /**
+     * Mengambil status produk dari database berdasarkan user yang login.
+     *
+     * @return int Status produk.
+     */
+    private function getStatusProduct(): int
     {
-        $productID = $this->users->selectByID($_SESSION['user_id']);
-        $productID = $productID[0]['product_id'];
-        $getStatusProduct = $this->products->selectByID($productID);
-        return $getStatusProduct[0]['st'];
-    }
-
-    private function checkProductID()
-    {
-        $productID = $this->users->selectByID($_SESSION['user_id']);
-        $productID = $productID[0]['product_id'];
-
-        if (!$productID) {
-            return false;
+        $productId = $this->getProductID();
+        if (!$productId) {
+            return 0; // Asumsikan status 0 jika tidak ada produk
         }
+
+        $productData = $this->products->selectByID($productId);
+        // Penambahan pemeriksaan untuk menghindari error jika data tidak ditemukan
+        return !empty($productData) ? (int)$productData[0]['st'] : 0;
     }
 
-    private function getProductID()
+    /**
+     * Memeriksa apakah product ID ada untuk user yang sedang login.
+     * Metode ini telah diperbaiki untuk mengembalikan nilai boolean yang jelas.
+     *
+     * @return bool True jika product ID ada, false jika tidak.
+     */
+    private function checkProductID(): bool
+    {
+        $productId = $this->getProductID();
+        return !empty($productId);
+    }
+
+    /**
+     * Mengambil ID produk dari user yang sedang login.
+     *
+     * @return int|null Product ID jika ditemukan, null jika tidak.
+     */
+    private function getProductID(): ?int
     {
         if (!$this->checkSession()) {
             return null;
         }
 
         $userData = $this->users->selectByID($_SESSION['user_id']);
-
+        
+        // Penambahan pemeriksaan untuk menghindari error "Undefined offset"
         if (empty($userData) || !isset($userData[0]['product_id'])) {
             return null;
         }
 
-        return $userData[0]['product_id'];
+        return (int)$userData[0]['product_id'];
+    }
+    
+    /**
+     * Helper method untuk mengirimkan response JSON berdasarkan hasil operasi database.
+     *
+     * @param bool $result Hasil dari operasi database (true/false).
+     * @param string $successMessage Pesan jika berhasil.
+     * @param string $errorMessage Pesan jika gagal.
+     */
+    private function sendJsonResponseFromResult(bool $result, string $successMessage, string $errorMessage): void
+    {
+        if ($result) {
+            $this->sendJsonResponse('success', $successMessage);
+        } else {
+            $this->sendJsonResponse('error', $errorMessage);
+        }
     }
 }
